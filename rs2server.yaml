@@ -1,0 +1,28 @@
+version: '3'
+
+services:
+  rs2server:
+    container_name: rs2server
+    hostname: rs2server
+    image: rs2server:latest
+    ports:
+      - 7777:7777/udp
+      - 27015:27015/udp
+      - 8080:8080
+    volumes:
+      - ./server:/home/steam/RS2:rw
+      - ./steamcmd:/home/steam/Steam:rw
+      - ./rs2server.sh:/rs2server.sh:rw
+  nginx:
+    container_name: rs2proxy
+    hostname: rs2proxy
+    image: nginx:latest
+    ports:
+      - 80:80
+      - 443:443
+    volumes:
+      - ./proxy/nginx.conf:/etc/nginx/nginx.conf:rw
+      - ./proxy/img:/var/www/img:rw
+      - ./proxy/certs:/etc/nginx/certs:rw
+    depends_on:
+      - rs2server
